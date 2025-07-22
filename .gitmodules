@@ -1,0 +1,3 @@
+[submodule "lib/rosepetal"]
+	path = lib/rosepetal
+	url = https://github.com/RosieSapphire/RosePetal.git
