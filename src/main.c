@@ -209,21 +209,19 @@ static struct line *lines_alloc(const rp_u16_t win_wd, const rp_u16_t win_ht)
 
 static void line_update(struct line *l, const rp_u16_t win_ht)
 {
-        if (!l->ticks_til_start) {
-                if ((++l->prog) >= win_ht + l->len) {
-                        l->prog = 0;
-                        l->ticks_til_start = 1;
-                }
+        if (l->ticks_til_start)
                 return;
-        }
 
-        if (!(--l->ticks_til_start)) {
+        if ((++l->prog) >= win_ht + l->len) {
                 rp_u16_t i;
 
+                l->prog = 0;
+                l->ticks_til_start = 1;
                 l->len = rand() & 15;
                 for (i = 0; i < win_ht; ++i)
                         l->chs[i] = '0' + (rand() & 1);
         }
+        return;
 }
 
 static void lines_free(struct line **lines_ptr)
