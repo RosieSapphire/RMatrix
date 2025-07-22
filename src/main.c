@@ -210,8 +210,10 @@ static struct line *lines_alloc(const rp_u16_t win_wd, const rp_u16_t win_ht)
 static void line_update(struct line *l, const rp_u16_t win_ht)
 {
         if (!l->ticks_til_start) {
-                if ((++l->prog) >= win_ht + l->len)
+                if ((++l->prog) >= win_ht + l->len) {
                         l->prog = 0;
+                        l->ticks_til_start = 1;
+                }
                 return;
         }
 
