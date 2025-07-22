@@ -45,6 +45,7 @@ static void line_to_win_buffer(const struct line *l,
 
 /* Line functions. */
 static struct line *lines_alloc(const rp_u16_t win_wd, const rp_u16_t win_ht);
+static void line_init(struct line *l, const rp_u16_t win_ht);
 static void line_update(struct line *l, const rp_u16_t win_ht);
 static void lines_free(struct line **lines_ptr);
 
@@ -191,20 +192,26 @@ static struct line *lines_alloc(const rp_u16_t win_wd, const rp_u16_t win_ht)
         lines = malloc(sizeof(*lines) * win_wd);
         for (i = 0; i < win_wd; ++i) {
                 struct line *l;
-                rp_u16_t j;
 
                 l = lines + i;
-                l->prog = 0;
                 l->ticks_til_start = rand() % win_ht;
-                l->len = rand() % win_ht;
-
                 l->chs = malloc(sizeof(*l->chs) * win_ht);
-                for (j = 0; j < win_ht; ++j) {
-                        l->chs[j] = '0' + (rand() & 1);
-                }
+
+                line_init(l, win_ht);
         }
         
         return lines;
+}
+
+static void line_init(struct line *l, const rp_u16_t win_ht)
+{
+        rp_u16_t i;
+
+        l->prog = 0;
+        l->len = rand() % win_ht;
+        for (i = 0; i < win_ht; ++i) {
+                l->chs[i] = '!' + (rand() % 94);
+        }
 }
 
 static void line_update(struct line *l, const rp_u16_t win_ht)
@@ -214,14 +221,8 @@ static void line_update(struct line *l, const rp_u16_t win_ht)
                 return;
         }
 
-        if ((++l->prog) >= win_ht + l->len) {
-                rp_u16_t i;
-
-                l->prog = 0;
-                l->len = rand() % win_ht;
-                for (i = 0; i < win_ht; ++i)
-                        l->chs[i] = '0' + (rand() & 1);
-        }
+        if ((++l->prog) >= win_ht + l->len)
+                line_init(l, win_ht);
 }
 
 static void lines_free(struct line **lines_ptr)
